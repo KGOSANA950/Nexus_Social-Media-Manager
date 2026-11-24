@@ -3,7 +3,7 @@
 A modern, fully interactive social media management dashboard built entirely with **Vanilla HTML, CSS, and JavaScript**. Nexus allows you to compose, schedule, and track your social media posts across Twitter, Instagram, LinkedIn, and Facebook from a single, beautiful dark-mode interface.
 
 ## 🚀 Live Demo
-👉 **[View the Live Nexus Dashboard]([https://kgosana950.github.io/Nexus_Social-Media-Manager/])**
+👉 **[View the Live Nexus Dashboard](https://kgosana950.github.io/Nexus_Social-Media-Manager/)**
 
 ## ✨ Features
 
