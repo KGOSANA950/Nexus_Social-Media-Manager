@@ -146,7 +146,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: CALENDAR (Interactive) -->
+            <!-- VIEW 3: CALENDAR -->
             <div id="calendar" class="page-view">
                 <header class="top-header">
                     <div>
@@ -172,9 +172,7 @@
                         <div>Sat</div>
                     </div>
                     
-                    <div class="calendar-grid" id="calendarGrid">
-                        <!-- Calendar days will be injected via JS -->
-                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
                 </div>
             </div>
 
@@ -211,7 +209,7 @@
         </main>
     </div>
 
-    <!-- NEW: SCHEDULING MODAL -->
+    <!-- SCHEDULING MODAL -->
     <div id="scheduleModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeScheduleModal()">&times;</span>
@@ -232,14 +230,12 @@
                 <input type="time" id="modal-time" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 8px;">
             </div>
 
-            <div id="modal-error" class="error-msg" style="display: none;">Error message here</div>
+            <div id="modal-error" class="error-msg" style="display: none;"></div>
 
             <button class="btn-primary" onclick="submitScheduledPost()" style="width: 100%;">Schedule Post</button>
         </div>
     </div>
 
     <script src="script.js"></script>
-</body>
-</html>
 </body>
 </html>
