@@ -13,12 +13,11 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Chart.js for the Analytics Graphs -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Canvas Confetti for the post animation -->
+    <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <!-- Link to our external CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -62,28 +61,28 @@
                     <div class="stat-card" onclick="filterFeed('twitter')">
                         <div class="stat-icon twitter"><i class="fab fa-twitter"></i></div>
                         <div class="stat-info">
-                            <h3 id="twitter-count" class="counter" data-target="0">0</h3>
+                            <h3 id="twitter-count" class="counter">0</h3>
                             <p>Twitter Posts</p>
                         </div>
                     </div>
                     <div class="stat-card" onclick="filterFeed('instagram')">
                         <div class="stat-icon instagram"><i class="fab fa-instagram"></i></div>
                         <div class="stat-info">
-                            <h3 id="instagram-count" class="counter" data-target="0">0</h3>
+                            <h3 id="instagram-count" class="counter">0</h3>
                             <p>Instagram Posts</p>
                         </div>
                     </div>
                     <div class="stat-card" onclick="filterFeed('linkedin')">
                         <div class="stat-icon linkedin"><i class="fab fa-linkedin"></i></div>
                         <div class="stat-info">
-                            <h3 id="linkedin-count" class="counter" data-target="0">0</h3>
+                            <h3 id="linkedin-count" class="counter">0</h3>
                             <p>LinkedIn Posts</p>
                         </div>
                     </div>
                     <div class="stat-card" onclick="filterFeed('facebook')">
                         <div class="stat-icon facebook"><i class="fab fa-facebook"></i></div>
                         <div class="stat-info">
-                            <h3 id="facebook-count" class="counter" data-target="0">0</h3>
+                            <h3 id="facebook-count" class="counter">0</h3>
                             <p>Facebook Posts</p>
                         </div>
                     </div>
@@ -99,9 +98,7 @@
                         <h2><i class="fab fa-github"></i> GitHub Activity (Simulated)</h2>
                         <span style="font-size: 0.8rem; color: var(--text-muted);">@KGOSANA950</span>
                     </div>
-                    
                     <div class="heatmap-grid" id="githubHeatmap"></div>
-                    
                     <div style="height: 200px;">
                         <canvas id="githubChart"></canvas>
                     </div>
@@ -149,7 +146,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: CALENDAR -->
+            <!-- VIEW 3: CALENDAR (NOW FULLY FUNCTIONAL) -->
             <div id="calendar" class="page-view">
                 <header class="top-header">
                     <div>
@@ -157,10 +154,27 @@
                         <p>Your scheduled content in a calendar view.</p>
                     </div>
                 </header>
-                <div class="empty-state">
-                    <i class="fas fa-calendar-alt"></i>
-                    <h3>Calendar View</h3>
-                    <p>This feature will be available in the full release.</p>
+                
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="btn-secondary" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i> Prev</button>
+                        <h2 id="currentMonthDisplay">Month Year</h2>
+                        <button class="btn-secondary" onclick="changeMonth(1)">Next <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    
+                    <div class="calendar-weekdays">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+                    
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Calendar days will be injected via JS -->
+                    </div>
                 </div>
             </div>
 
@@ -197,7 +211,6 @@
         </main>
     </div>
 
-    <!-- Link to our external JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
