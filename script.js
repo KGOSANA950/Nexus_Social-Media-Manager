@@ -3,6 +3,7 @@ let posts = JSON.parse(localStorage.getItem('nexus_posts_final')) || [];
 let currentFilter = 'all';
 let chartInstance = null;
 let githubChartInstance = null;
+let currentCalendarDate = new Date(); // Tracks the current month being viewed
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,6 +23,8 @@ function switchTab(tabId, navElement) {
 
     if(tabId === 'dashboard') {
         updateChartData();
+    } else if (tabId === 'calendar') {
+        renderCalendar(); // Render calendar when tab is clicked
     }
 }
 
@@ -38,6 +41,8 @@ document.getElementById('post-form').addEventListener('submit', (e) => {
         id: Date.now(),
         content: content,
         platforms: platforms,
+        // Store exact timestamp for the calendar, and a readable string for the feed
+        timestamp: Date.now(),
         date: new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
         likes: Math.floor(Math.random() * 500) + 10,
         comments: Math.floor(Math.random() * 50) + 2,
@@ -53,7 +58,6 @@ document.getElementById('post-form').addEventListener('submit', (e) => {
     updateStats();
     updateChartData();
 
-    // ANIMATION: Confetti Explosion
     confetti({
         particleCount: 150,
         spread: 70,
@@ -62,7 +66,7 @@ document.getElementById('post-form').addEventListener('submit', (e) => {
     });
 });
 
-// --- RENDER POSTS ---
+// --- RENDER POSTS (Dashboard Feed) ---
 function renderPosts() {
     const feed = document.getElementById('posts-feed');
     feed.innerHTML = '';
@@ -109,6 +113,7 @@ function deletePost(id) {
         renderPosts();
         updateStats();
         updateChartData();
+        renderCalendar(); // Update calendar if it's open
     }
 }
 
@@ -133,7 +138,7 @@ function savePost(id) {
     renderPosts();
 }
 
-// --- FILTERS & STATS (With Count-Up Animation) ---
+// --- FILTERS & STATS ---
 function filterFeed(platform) {
     currentFilter = platform;
     renderPosts();
@@ -147,7 +152,6 @@ function updateStats() {
         facebook: posts.filter(p => p.platforms.includes('facebook')).length
     };
 
-    // Animate the numbers counting up
     animateValue("twitter-count", 0, counts.twitter, 800);
     animateValue("instagram-count", 0, counts.instagram, 800);
     animateValue("linkedin-count", 0, counts.linkedin, 800);
@@ -157,20 +161,14 @@ function updateStats() {
 function animateValue(id, start, end, duration) {
     const obj = document.getElementById(id);
     if (!obj) return;
-    
-    if (start === end) {
-        obj.innerHTML = end;
-        return;
-    }
+    if (start === end) { obj.innerHTML = end; return; }
 
     let startTimestamp = null;
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         obj.innerHTML = Math.floor(progress * (end - start) + start);
-        if (progress < 1) {
-            window.requestAnimationFrame(step);
-        }
+        if (progress < 1) window.requestAnimationFrame(step);
     };
     window.requestAnimationFrame(step);
 }
@@ -188,7 +186,84 @@ function saveDB() {
     localStorage.setItem('nexus_posts_final', JSON.stringify(posts));
 }
 
-// --- CHART.JS ANALYTICS LOGIC ---
+// =========================================
+// NEW: CALENDAR LOGIC
+// =========================================
+function changeMonth(direction) {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+    renderCalendar();
+}
+
+function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    const monthDisplay = document.getElementById('currentMonthDisplay');
+    
+    grid.innerHTML = '';
+    
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+    
+    // Set header text (e.g., "November 2026")
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    monthDisplay.textContent = `${monthNames[month]} ${year}`;
+
+    // Get first day of month and total days in month
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Get today's date for highlighting
+    const today = new Date();
+    const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
+
+    // Create empty cells for days before the 1st
+    for (let i = 0; i < firstDayOfMonth; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.classList.add('calendar-day', 'empty');
+        grid.appendChild(emptyCell);
+    }
+
+    // Create cells for each day of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayCell = document.createElement('div');
+        dayCell.classList.add('calendar-day');
+        
+        if (isCurrentMonth && day === today.getDate()) {
+            dayCell.classList.add('today');
+        }
+
+        dayCell.innerHTML = `<div class="day-number">${day}</div>`;
+
+        // Find posts for this specific day
+        const postsOnThisDay = posts.filter(post => {
+            const postDate = new Date(post.timestamp);
+            return postDate.getDate() === day && postDate.getMonth() === month && postDate.getFullYear() === year;
+        });
+
+        // Add mini posts inside the day
+        if (postsOnThisDay.length > 0) {
+            const postsContainer = document.createElement('div');
+            postsContainer.classList.add('day-posts');
+            
+            postsOnThisDay.forEach(post => {
+                const miniPost = document.createElement('div');
+                miniPost.classList.add('mini-post');
+                miniPost.textContent = post.content;
+                miniPost.title = post.content;
+                // Clicking a mini post takes you back to dashboard
+                miniPost.onclick = () => switchTab('dashboard', document.querySelectorAll('.nav-item')[0]);
+                postsContainer.appendChild(miniPost);
+            });
+            
+            dayCell.appendChild(postsContainer);
+        }
+
+        grid.appendChild(dayCell);
+    }
+}
+
+// =========================================
+// CHART.JS ANALYTICS LOGIC
+// =========================================
 function initChart() {
     const ctx = document.getElementById('analyticsChart').getContext('2d');
     
@@ -199,16 +274,8 @@ function initChart() {
             datasets: [{
                 label: 'Total Engagement',
                 data: [0, 0, 0],
-                backgroundColor: [
-                    'rgba(59, 130, 246, 0.7)',
-                    'rgba(16, 185, 129, 0.7)',
-                    'rgba(245, 158, 11, 0.7)'
-                ],
-                borderColor: [
-                    '#3b82f6',
-                    '#10b981',
-                    '#f59e0b'
-                ],
+                backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(16, 185, 129, 0.7)', 'rgba(245, 158, 11, 0.7)'],
+                borderColor: ['#3b82f6', '#10b981', '#f59e0b'],
                 borderWidth: 1,
                 borderRadius: 6
             }]
@@ -216,19 +283,10 @@ function initChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
+            plugins: { legend: { display: false } },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: '#94a3b8' }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#94a3b8' }
-                }
+                y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
+                x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
             }
         }
     });
@@ -238,10 +296,7 @@ function initChart() {
 
 function updateChartData() {
     if (!chartInstance) return;
-
-    let totalLikes = 0;
-    let totalComments = 0;
-    let totalShares = 0;
+    let totalLikes = 0, totalComments = 0, totalShares = 0;
 
     posts.forEach(post => {
         totalLikes += post.likes || 0;
@@ -301,19 +356,10 @@ function initGitHubWidgets() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
+            plugins: { legend: { display: false } },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: '#94a3b8', stepSize: 3 }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#94a3b8' }
-                }
+                y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', stepSize: 3 } },
+                x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
             }
         }
     });
