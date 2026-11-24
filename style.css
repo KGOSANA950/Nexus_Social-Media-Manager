@@ -136,23 +136,15 @@ textarea { width: 100%; height: 150px; background: var(--bg-dark); border: 1px s
 textarea:focus { border-color: var(--primary); }
 .composer-actions { display: flex; justify-content: space-between; align-items: center; }
 
-/* --- NEW: CALENDAR STYLES --- */
+/* --- CALENDAR --- */
 .calendar-container {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 20px;
 }
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
+.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .calendar-header h2 { font-size: 1.5rem; }
-
 .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -163,13 +155,11 @@ textarea:focus { border-color: var(--primary); }
     border-bottom: 1px solid var(--border);
     padding-bottom: 10px;
 }
-
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 10px;
 }
-
 .calendar-day {
     min-height: 100px;
     background: var(--bg-dark);
@@ -177,17 +167,20 @@ textarea:focus { border-color: var(--primary); }
     border-radius: 8px;
     padding: 8px;
     transition: 0.2s;
+    cursor: pointer;
 }
-
+.calendar-day:hover:not(.empty):not(.past-date) {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--primary);
+    transform: scale(1.02);
+}
 .calendar-day.empty { background: transparent; border: none; }
-
+.calendar-day.past-date { opacity: 0.4; cursor: not-allowed; background: rgba(0,0,0,0.2); }
+.calendar-day.past-date .day-number { text-decoration: line-through; }
 .calendar-day.today { border: 2px solid var(--primary); }
 .calendar-day.today .day-number { color: var(--primary); font-weight: 700; }
-
 .day-number { font-weight: 600; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px; }
-
 .day-posts { display: flex; flex-direction: column; gap: 4px; }
-
 .mini-post {
     font-size: 0.65rem;
     padding: 3px 5px;
@@ -198,6 +191,44 @@ textarea:focus { border-color: var(--primary); }
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
+}
+
+/* --- MODAL (SCHEDULING) --- */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+.modal.active { display: flex; }
+.modal-content {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    border: 1px solid var(--border);
+}
+.close-btn {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+.close-btn:hover { color: white; }
+.error-msg {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+    border: 1px solid #ef4444;
 }
 
 /* --- EMPTY STATES --- */
